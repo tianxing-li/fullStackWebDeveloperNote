@@ -1,0 +1,26 @@
+curl -o dictionary.txt -L 'https://tinyurl.com/zeyq9vc'  //copy or see url -L follow redirection 
+cat //catenate or concatenate
+less //read the file use '/' to search, use b to go back, q to quit
+rm //remove -i to make sure
+rmdir
+
+grep somewords file.file //to find all somewords in the file.file
+grep somewords file.file | less //if too many results, we can use less together, so actually we execute the grep somewords to file.file and pipe this data to do less
+
+exp. curl -L 'https://tinyurl.com/zeyq9vc' | grep fish | wc -l
+<=> curl -o dictionary.txt -L 'https://tinyurl.com/zeyq9vc' | grep -c fish
+
+wc //wordscount
+
+echo $LINES * $COLUMNS
+echo $PATH
+echo $LOGNAME
+
+man bash
+
+alias ll = 'ls -la' //could same write in the .bashrc
+
+http://bashrcgenerator.com 
+
+shell sources
+https://classroom.udacity.com/nanodegrees/nd004/parts/fe81273e-394c-492a-892e-664bd3cc9d4a/modules/a79b0d41-805e-4c0b-adec-6ae548f3fb45/lessons/1cc90ac3-c03a-43e6-8556-dcbd40dfd418/concepts/aa9e3767-3477-483e-8568-5c1ca02be009
