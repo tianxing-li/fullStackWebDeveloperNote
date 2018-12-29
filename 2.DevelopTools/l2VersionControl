@@ -1,0 +1,9 @@
+Terminology
+	Version Control System / Source Code Manager
+	Commit
+	Repository / repo: A repository is a directory which contains your project work, as well as a few files (hidden by default on Mac OS X) which are used to communicate with Git. Repositories can exist either locally on your computer or as a remote copy on another computer. A repository is made up of commits.
+	Working Directory: The Working Directory is the files that you see in your computer's file system.
+	Checkout
+	Staging Area / Staging Index / Index
+	SHA: A SHA is basically an ID number for each commit.
+	Branch
