@@ -1,0 +1,8 @@
+git init	//create brand new repos, he empty one that we created with the git init command
+git clone	//copy existing repos from somewhere, the one we cloned with the git clone command
+git status	//check the status of a repo
+
+git clone https://abc.def/hjk new_folder
+
+git status	//change depending on if files have been added/deleted/modified; display the current status of the repository.
+git log
