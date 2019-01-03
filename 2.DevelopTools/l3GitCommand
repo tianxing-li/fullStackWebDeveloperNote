@@ -5,4 +5,41 @@ git status	//check the status of a repo
 git clone https://abc.def/hjk new_folder
 
 git status	//change depending on if files have been added/deleted/modified; display the current status of the repository.
-git log
+git log		//show the SHA, the author, the date and the message
+			// --oneline
+			// --stat 	(displays the file(s) that have been modified)
+			// -p (patch, display the actual changes made to a file)
+				//@@ -78,9 +78,15 @@ 78 is location, 9 is how many lines showed from the old doc, 15 is how many lines showed from the new doc.
+				// -w ignores whitespace changes
+git show	// plus hash that u can check the change
+			//can be combined with most of the other flags
+
+git add 	//move files from the Working Directory to the Staging Index.
+git add . 	// add all changed files
+git rm --cached <file>...	// to unstage
+
+git config --global core.editor <your-editor's-config-went-here>
+
+git commit
+git commit -m "Initial commit"
+			//each commit should make a change to just one aspect of the project.
+			//Explain the Why: If you need to explain why a commit needs to be made, you can!
+				When you're writing the commit message, the first line is the message itself. After the message, leave a blank line, and then type out the body or explanation including details about why the commit is needed 
+				https://udacity.github.io/git-styleguide/
+
+git diff	//the actual changes that have been made from wording area to staging area
+
+Git Ignore: ATTENTION: THAT IS A FOLDER
+	used to tell Git about the files that Git should not track. This file should be placed in the same directory that the .git directory is in.
+
+	If you want to keep a file in your project's directory structure but make sure it isn't accidentally committed to the project, you can use the specially named file, .gitignore (note the dot at the front, it's important!). Add this file to your project in the same directory that the hidden .git directory is located. All you have to do is list the names of files that you want Git to ignore (not track) and it will ignore them.
+
+	blank lines can be used for spacing
+	# - marks line as a comment
+	* - matches 0 or more characters
+	? - matches 1 character
+	[abc] - matches a, b, _or_ c
+	** - matches nested directories - a/**/z matches
+		a/z
+		a/b/z
+		a/b/c/z
