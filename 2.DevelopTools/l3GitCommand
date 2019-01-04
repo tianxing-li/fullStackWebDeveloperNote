@@ -29,7 +29,8 @@ git commit -m "Initial commit"
 
 git diff	//the actual changes that have been made from wording area to staging area
 
-Git Ignore: ATTENTION: THAT IS A FOLDER
+Git Ignore: ATTENTION: THAT IS A DOC
+						//just need to write the file name which should be ignored
 	used to tell Git about the files that Git should not track. This file should be placed in the same directory that the .git directory is in.
 
 	If you want to keep a file in your project's directory structure but make sure it isn't accidentally committed to the project, you can use the specially named file, .gitignore (note the dot at the front, it's important!). Add this file to your project in the same directory that the hidden .git directory is located. All you have to do is list the names of files that you want Git to ignore (not track) and it will ignore them.
