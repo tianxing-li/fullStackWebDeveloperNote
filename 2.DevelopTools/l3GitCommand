@@ -44,3 +44,15 @@ Git Ignore: ATTENTION: THAT IS A DOC
 		a/z
 		a/b/z
 		a/b/c/z
+
+git tag 			// check tags
+git tag -a v1.0		// add a tag
+git tag -a v1.0 a87984
+git tag -a beta b552fa5
+git tag -d v1.0		// del a tag
+git tag --delete v1.0
+		//-a tells Git to create an annotated flag. If you don't provide the flag (i.e. git tag v1.0) then it'll create what's called a lightweight tag.
+		//Annotated tags are recommended because they include a lot of extra information such as:
+			the person who made the tag
+			the date the tag was made
+			a message for the tag
