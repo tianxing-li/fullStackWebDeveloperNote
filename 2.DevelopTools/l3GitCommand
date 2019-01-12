@@ -70,3 +70,16 @@ git checkout a87984			//switch between branches or commits
 git log --oneline --decorate
 
 git log --oneline --decorate --graph --all
+
+git reset --hard HEAD^	//undo the merge
+git merge "branchname"	//merging some other branch into the current (checked-out) branch
+		//1. Fast-forward merge – the branch being merged in must be ahead of the checked out branch
+		//2. the regular type of merge. two divergent branches are combined. a merge commit is created
+
+		Merge Conflict Indicators Explanation
+			<<<<<<< HEAD everything below this line (until the next indicator) shows you what's on the current branch
+			||||||| merged common ancestors everything below this line (until the next indicator) shows you what the original lines were
+			======= is the end of the original lines, everything that follows (until the next indicator) is what's on the branch that's being merged in
+			>>>>>>> heading-update is the ending indicator of what's on the branch that's being merged in (in this case, the heading-update branch)
+
+			//removed all lines with merge conflict indicators and have selected what heading you want to use, just save the file, add it to the staging index, and commit it!
