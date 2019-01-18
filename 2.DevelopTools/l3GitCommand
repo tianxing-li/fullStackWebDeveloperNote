@@ -83,3 +83,25 @@ git merge "branchname"	//merging some other branch into the current (checked-out
 			>>>>>>> heading-update is the ending indicator of what's on the branch that's being merged in (in this case, the heading-update branch)
 
 			//removed all lines with merge conflict indicators and have selected what heading you want to use, just save the file, add it to the staging index, and commit it!
+
+git commit --amend	//include files (or changes to files), alter the most-recent commit
+						1. edit the file(s)
+						2. save the file(s)
+						3. stage the file(s)
+						4. and run git commit --amend	//update the most-recent commit instead of creating a new one
+
+git revert <SHA-of-commit-to-revert>	//undo the changes that were made by the provided commit
+
+git reset	// ^ – indicates the parent commit
+			// ~ – indicates the first parent commit
+			//HEAD^ <==> HEAD~ <==> HEAD~1 <==> the parent commit – the following indicate the parent commit of the current commit
+			//HEAD^^ <==> HEAD~2, HEAD^^^ <==> HEAD~3, HEAD^^^ is the 1st parent from HEAD^^, HEAD^^^2 is the 2nd parent from HEAD^^
+			//HEAD^^^2 <==> HEAD~2^2
+			//difference: the ^ reference is used to indicate the first parent (inside) of the commit while ^2 indicates the second parent
+			// --mixed (default) move to working directory
+			// --soft mv to Staging Index
+			// --hard mv to trash
+
+git branch backup	//follow along with all the resetting stuff that's coming up
+
+git reflog	//Git does keep track of everything for about 30 days before it completely erases anything
