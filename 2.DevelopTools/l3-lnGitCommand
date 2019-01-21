@@ -105,3 +105,28 @@ git reset	// ^ – indicates the parent commit
 git branch backup	//follow along with all the resetting stuff that's coming up
 
 git reflog	//Git does keep track of everything for about 30 days before it completely erases anything
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+REMOTES
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+git remote 	//manage and interact with remote repositories
+			//-v full path to the remote repository
+
+//add a new repo on github then
+git remote add origin https://github.com/xxxx/xxxx.git
+
+git push origin master	//git push <remote-shortname> <branch>
+git pull origin master	//automatically merge
+git fetch				//no automatically merge
+
+git shortlog	//displays an alphabetical list of names and the commit messages that go along with them
+			// -s show just the number of commits
+			// -n sort them numerically
+			// --author==xxx display all of the commits by an author
+			// --author=="abc def"
+
+git log --grep=bug
+git log --grep bug
+git log --grep="unit tests"
+git log --grep "fort" 	//Git will display only the commits that have the character f followed by the character o followed by r followed by t.
