@@ -63,6 +63,7 @@ git branch -d "branchname"	//delete "branchname". can't delete a branch that cur
 							//Git won't let you delete a branch if it has commits on it that aren't on any other branch (meaning the commits are unique to the branch that's about to be deleted).
 							git branch -D "branchname" force deletion
 git branch "branchname" a87984
+			//bugfix-login-form
 git checkout a87984			//switch between branches or commits
 			// master
 			// branchname
@@ -130,3 +131,4 @@ git log --grep=bug
 git log --grep bug
 git log --grep="unit tests"
 git log --grep "fort" 	//Git will display only the commits that have the character f followed by the character o followed by r followed by t.
+
