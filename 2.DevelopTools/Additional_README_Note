@@ -46,7 +46,6 @@ $$ 表示整行公式
 	![Udacity](https://udacity.com/)
 
 ##标题
-	
 	###无序
 		*item1
 		*item2
@@ -77,6 +76,7 @@ console.log("Hello Wordl");
 | --------- |:---------:|----------:|
 | sth1      | sth1_des  | sth1_por  |
 | sth2      | sth2_des  | sth2_por  |
+
 
 复选框
 - [x] chosen one
