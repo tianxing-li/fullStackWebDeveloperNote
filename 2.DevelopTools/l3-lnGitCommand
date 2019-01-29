@@ -132,3 +132,27 @@ git log --grep bug
 git log --grep="unit tests"
 git log --grep "fort" 	//Git will display only the commits that have the character f followed by the character o followed by r followed by t.
 
+pull request form fork to original
+
+local - fork - origin - mein
+local - original - upstream (new build) - source-repo
+
+git remote add upstream https://github.com/udacity/course-collaboration-travel-plans.git
+git remote rename mine origin 	//rename
+
+git rebase 	// WARNING!!! use carefully
+git rebase -i HEAD~3	//-i interactive, head is current location, ~3 three before
+						// take careful the notice, use squash or pick, generally 1st is pick and follow are squash, and reword the pick commit, so change ths 1st to reword(r)
+						// a SHA, a branch name or a tag name can also be used
+						use p or pick – to keep the commit as is
+						use r or reword – to keep the commit's content but alter the commit message
+						use e or edit – to keep the commit's content but stop before committing so that you can:
+						add new content or files
+						remove content or files
+						alter the content that was going to be committed
+						use s or squash – to combine this commit's changes into the previous commit (the commit above it in the list)
+						use f or fixup – to combine this commit's change into the previous one but drop the commit message
+						use x or exec – to run a shell command
+						use d or drop – to delete the commit
+
+gir push -f(force) origin master
