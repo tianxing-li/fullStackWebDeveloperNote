@@ -1,0 +1,93 @@
+Nmap
+sudo apt-get install nmap
+
+ncat -l 9999			//listen on port 9999, server
+ncat localhost 9999		//connect localhost 9999, client
+
+python3 -m http.server 8000
+	//The demo server won't let a web browser access files outside the directory that it's running in.
+//404 is the HTTP status code for "Not Found".
+
+URI for Uniform Resource Identifier, a name for a resource
+
+URL or Uniform Resource Locator, a URL is a URI for a resource on the network
+	URL就是用定位的方式实现的URI
+
+URL and URI
+	1）URI是个纯粹的句法结构，用于指定标识Web资源的字符串的各个不同部分。URL是URI的一个特例，它包含了定位Web资源的足够信息
+	URI 是统一资源标识符，而 URL 是统一资源定位符。因此，笼统地说，每个 URL 都是 URI，但不一定每个 URI 都是 URL。这是因为 URI 还包括一个子类，即统一资源名称 (URN)，它命名资源但不指定如何定位资源。mailto、news 和 isbn URI 都是 URN 的示例
+	mailto：cay@horstman.com
+	https://www.zhihu.com/question/21950864
+
+https is the scheme;
+en.wikipedia.org is the hostname;
+and /wiki/Fish is the path.
+
+http://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
+
+<a href="cliffsofinsanity.png">cliffsofinsanity.png</a> is a relative URI reference. 
+
+host google.com	//look up hostnames in DNS(Domain Name Service)
+nslookup google.com
+
+Localhost is 127.0.0.1. Well, that's IPv4 localhost, anyway. IPv6 localhost is ::1, which is short for 0000:0000:0000:0000:0000:0000:0000:0001.
+0.0.0.0 is not a regular IP address. Instead, it's a special code for "every IPv4 address on this computer".
+
+HTTP URIs imply a port number of 80, whereas HTTPS URIs imply a port number of 443.
+
+
+Http GET Request
+127.0.0.1 - - [03/Oct/2016 15:45:50] "GET /readme.png HTTP/1.1" 200 -
+	GET /readme.png HTTP/1.1
+		GET is the method or HTTP verb being used, clients use when they want a server to send a resource
+		/readme.png is the path of the resource being requested
+		HTTP/1.1 is the protocol of the request
+
+
+ncat 127.0.0.1 8000	//connect your terminal to the demo server.
+GET / HTTP/1.1		//typing
+Host: localhost
+
+HTTP response
+
+	status line
+		HTTP/1.0 200 OK
+		HTTP/1.1 301 Moved Permanently
+			status codes
+			1xx — Informational. The request is in progress or there's another step to take.
+			2xx — Success! The request succeeded. The server is sending the data the client asked for.
+			3xx — Redirection. The server is telling the client a different URI it should redirect to. The headers will usually contain a Location header with the updated URI. Different codes tell the client whether a redirect is permanent or temporary.
+			4xx — Client error. The server didn't understand the client's request, or can't or won't fill it. Different codes tell the client whether it was a bad URI, a permissions problem, or another sort of error.
+			5xx — Server error. Something went wrong on the server side.
+			https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+
+	headers	//An HTTP response can include many headers. Headers aren't displayed by browsers or other clients; instead, they tell the client various information about the response.
+		Location
+		Content-type: //e.g: text/html; charset=utf-8 or image/png
+		Set-Cookie	//set a cookie, the browser will then send the cookie data back in a Cookie header on subsequent requests
+		Content-Length	//Browsers use this so they can fetch multiple pieces of data (such as images on a web page) without having to reconnect to the server.
+
+	response body
+
+
+ncat -l 9999
+and at the same time web browser at http://localhost:9999/
+
+GET / HTTP/1.1
+Host: localhost:9999
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding: gzip, deflate, br
+Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7
+
+HTTP/1.1 307 Temporary redirect 	or	HTTP/1.1 200 OK
+Location: https://www.eff.org/		or	Content-type: text/plain
+										Content-length: 50
+
+										Hello, browser! I am a real HTTP server, honestly!
+
+browser redirect 						browser show the plain text(Remember the blank line between headers and body!)
+
+that means, man could use this service to pretend to a server(mail server for example) to send trash, even though he is not a server.
