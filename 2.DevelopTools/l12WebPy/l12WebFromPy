@@ -27,3 +27,7 @@ The query part of the URI is the part after the ? mark. Conventionally, query pa
 
 PY unpack query parameters and other parts of an HTTP URL
 https://docs.python.org/3/library/urllib.parse.html
+
+Basic HTML konwledge
+https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms
+https://www.w3.org/TR/2011/WD-html5-20110525/forms.html
