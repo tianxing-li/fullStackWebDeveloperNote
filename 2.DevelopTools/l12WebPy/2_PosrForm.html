@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>Testing Post requests</title>
+<form action="http://localhost:9999/" method="POST">
+  <label>Magic Input:
+      <input type="text" name="magic" value="mystery">
+  </label>
+  <br>
+  <label>Secret input:
+      <input type="text" name="secret" value="spooky">
+  </label>
+  <br>
+  <button type="submit">DO A THING!</button>
+  <p>ncat -l 9999</p>
+</form>

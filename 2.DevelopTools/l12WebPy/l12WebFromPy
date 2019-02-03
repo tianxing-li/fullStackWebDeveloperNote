@@ -31,3 +31,8 @@ https://docs.python.org/3/library/urllib.parse.html
 Basic HTML konwledge
 https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms
 https://www.w3.org/TR/2011/WD-html5-20110525/forms.html
+
+idempotent
+	An action is idempotent if doing it twice (or more) produces the same result as doing it once.
+
+POST requests are not idempotent. If you've ever seen a warning from your browser asking you if you really mean to resubmit a form, what it's really asking is if you want to do a non-idempotent action a second time.
