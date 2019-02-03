@@ -1,0 +1,29 @@
+Note: http.server is not recommended for production.
+
+http.server
+	HTTPServer class: knows how to listen on a port and accept HTTP requests from clients. same for every web service.
+	request handler class: different for every web service.
+
+Python to run a web service:
+	Import http.server
+	Create a subclass of http.server.BaseHTTPRequestHandler.	//handler class
+	Define a method on the handler class for each HTTP verb		//GET and so on
+		Get -> do_GET
+		Inside the method, call built-in methods of the handler class to read the HTTP request and write the response.
+	Create an instance of http.server.HTTPServer, giving it handler class and server information 	//port number
+	Call the HTTPServer instance's serve_forever method.
+
+http://localhost:8000/bears
+http://localhost:8000/spiders_from_mars#stardust
+	The word stardust only shows up in a URI fragment above — it appears after the # sign in the second URI. Fragments aren't sent to the server as part of an HTTP GET request; they only affect the browser. 
+http://localhost:8000/giant-squid?color=green
+
+
+https://www.google.com/search?q=gray+squirrel&tbm=isch
+HTTP request:
+	GET /search?q=gray+squirrel&tbm=isch HTTP/1.1
+	Host: www.google.com
+The query part of the URI is the part after the ? mark. Conventionally, query parameters are written as key=value and separated by & signs. So the above URI has two query parameters, q and tbm, with the values gray+squirrel and isch.
+
+PY unpack query parameters and other parts of an HTTP URL
+https://docs.python.org/3/library/urllib.parse.html
