@@ -43,3 +43,9 @@ Post-Redirect-Get
 Requests library is a Python library for sending requests to web servers and interpreting the responses.
 	pip3 install requests
 	doc: http://docs.python-requests.org/en/master/user/quickstart/
+
+JSON
+	a data format based on the syntax of JavaScript, often used for web-based APIs
+	http://www.json.org/
+
+	https://uinames.com/
