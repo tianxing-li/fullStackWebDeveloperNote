@@ -35,4 +35,11 @@ https://www.w3.org/TR/2011/WD-html5-20110525/forms.html
 idempotent
 	An action is idempotent if doing it twice (or more) produces the same result as doing it once.
 
-POST requests are not idempotent. If you've ever seen a warning from your browser asking you if you really mean to resubmit a form, what it's really asking is if you want to do a non-idempotent action a second time.
+POST requests are not idempotent, but for GET is yes. If you've ever seen a warning from your browser asking you if you really mean to resubmit a form, what it's really asking is if you want to do a non-idempotent action a second time.
+
+Post-Redirect-Get
+	A client POSTs to a server to create or update a resource; on success, the server replies not with a 200 OK but with a 303 redirect. The redirect causes the client to GET the created or updated resource.
+
+Requests library is a Python library for sending requests to web servers and interpreting the responses.
+	pip3 install requests
+	doc: http://docs.python-requests.org/en/master/user/quickstart/
