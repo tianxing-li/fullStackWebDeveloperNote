@@ -1,0 +1,120 @@
+Steps to deployment
+	1. a new local Git repo
+	2. Heroku Command-Line Interface
+		https://devcenter.heroku.com/articles/heroku-cli
+	3. Authenticate the Heroku CLI with your account: 
+		heroku login
+	4. create configuration files:
+		Procfile
+			https://devcenter.heroku.com/articles/procfile
+			web: python BookmarkServer.py
+		requirements.txt
+			used by Heroku (through pip) to install dependencies of your application that aren't in the Python standard library.
+		runtime.txt
+			https://devcenter.heroku.com/articles/python-runtimes
+			python-3.7.2
+	5. Modify server to listen on a configurable port
+		Python code can access environment variables in the os.environ dictionary. The names of environment variables are usually capitalized; and the environment variable we need here is called, unsurprisingly, PORT.
+		if __name__ == '__main__':
+		    port = int(os.environ.get('PORT', 8000))   # Use PORT if it's there.
+		    server_address = ('', port)
+		    httpd = http.server.HTTPServer(server_address, Shortener)
+		    httpd.serve_forever()
+		access os.environ, import os
+	6. Create Heroku app:
+		heroku create your-app-name(tlbms)
+		https://your-app-name(tlbms).herokuapp.com/.
+	7. Push code to Heroku with Git:
+		git push heroku master
+	8. Accessing server logs
+		https://dashboard.heroku.com/apps/your-app-name(tlbms)/logs
+
+http.server.HTTPServer can not handle two ongiong tasks(Concurrency
+
+The Python standard library supports doing this by adding a mixin to the HTTPServer class.
+{
+	import threading
+	from socketserver import ThreadingMixIn
+
+	class ThreadHTTPServer(ThreadingMixIn, http.server.HTTPServer):
+	    "This is an HTTPServer that supports thread-based concurrency."
+}
+{
+	if __name__ == '__main__':
+	    port = int(os.environ.get('PORT', 8000))
+	    server_address = ('', port)
+	    httpd = ThreadHTTPServer(server_address, Shortener)
+	    httpd.serve_forever()
+}
+
+Routing and load balancing
+	Some web applications have several different server components, each running as a separate process. One thing a specialized web server can do is dispatch requests to the particular backend servers that need to handle each request.(request routing and reverse proxying)
+	Splitting requests up among several servers is called load balancing. Load balancing also helps handle conditions where one server becomes unavailable, allowing other servers to pick up the slack.
+	A reverse proxy can health check the backend servers, only sending requests to the ones that are currently up and running. This also makes it possible to do updates to the backend servers without having an outage.
+
+	in-flight requests, meaning that the request has "taken off" from the client, but the response has not "landed" again back at the client.
+
+Caching
+	a temporary storage for resources that are likely to be reused.
+	reverse proxy to cache results so they don't need to be recomputed by a slower application server or database.
+	https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching
+
+Capacity
+
+Cookies
+	set-cookie
+		first time the client makes a request to the server, the server sends back the response with a Set-Cookie header.
+		contains: a cookie name, a value, and some attributes
+		Every subsequent time the browser makes a request to the server, it will send that cookie back to the server. The server can update cookies, or ask the browser to expire them.
+	cookie
+	
+	a way that a server can ask a browser to retain a piece of information, and send it back to the server when the browser makes subsequent requests.
+	a name and a value
+	has rules that specify when the cookie should be sent back
+	implement higher-level concepts on top of HTTP requests and responses — things like sessions and login
+	implement higher-level concepts on top of HTTP requests and responses — things like sessions and login
+	store user preferences for a site.
+
+	name: key	//for py is dic's key and value, syntactic rules for which characters are allowed in a cookie name
+	content: 	//value, a unique token representing a logged-in user's session
+	domain:		//the hostname from the URI
+	path:
+	send for:	//Secure(if secure, then just https)
+	accessible to script:	//HttpOnly(not be accessible to JavaScript code running on the page)
+	created:	//the time of the response that set the cookie.
+	expires:	//when the server wants the browser to stop saving the cookie
+		Expires
+		Max-Age	//number of seconds, cookie expired when browser closes
+
+
+Using cookies in Python
+	set the Set-Cookie header on an HTTP response
+	read a cookie in an incoming request, you read the Cookie header
+	http.cookies 	//https://docs.python.org/3/library/http.cookies.html
+
+	To create a cookie on a Python server, use the SimpleCookie class. This class is based on a dictionary, but has some special behavior once you create a key within it:
+	{
+		from http.cookies import SimpleCookie, CookieError
+
+		out_cookie = SimpleCookie()
+		out_cookie["bearname"] = "Smokey Bear"
+		out_cookie["bearname"]["max-age"] = 600
+		out_cookie["bearname"]["httponly"] = True
+	}
+	send the cookie as a header from your request handler:
+	{
+		self.send_header("Set-Cookie", out_cookie["bearname"].OutputString())
+	}
+	
+	To read incoming cookies, create a SimpleCookie from the Cookie header:
+	{
+		in_cookie = SimpleCookie(self.headers["Cookie"])
+		in_data = in_cookie["bearname"].value
+	}
+	a request might not have a cookie on it, in which case accessing the Cookie header will raise a KeyError exception; or the cookie might not be valid, in which case the SimpleCookie constructor will raise http.cookies.CookieError.
+
+	IMPORTANT SAFETY TIP: user can modify a cookie value even though it difficult. High-level web toolkits,(Flash in PY, Rails in Ruby), will cryptographically sign cookies so that they won't be accepted if they are modified. Quite often, high-security web app use a cookie just to store a session ID(a key to a server siede database containing user info.)
+
+	ANOTHER SAFETY TIP: if display the cookie data as HTML, need to be careful to escape any HTML special characters that might be in it.(in Py, use html.escape from the built in html module.)
+
+
