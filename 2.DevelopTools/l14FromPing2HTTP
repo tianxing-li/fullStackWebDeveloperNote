@@ -1,0 +1,63 @@
+AWS service
+	https://lightsail.aws.amazon.com/
+
+SSH setting up
+	hosted option
+		use amazon lightsail
+
+	local vm option
+		virtualBox
+		Vagrant
+			create:
+				mkdir networking
+				cd networking
+				vagrant init ubuntu/trusty64
+				vagrant up
+
+			open:
+				vagrant ssh
+
+Installing networking tools
+	sudo apt-get update && sudo apt-get upgrade
+		the && in the above command means "run the first program; then if that succeeds, run the second program
+	sudo apt-get install netcat-openbsd tcpdump traceroute mtr
+
+ping -c3 8.8.8.8
+	-c3 means to send 3 test messages, then quit
+
+printf 'HEAD / HTTP/1.1\r\nHost: en.wikipedia.org\r\n\r\n' | nc en.wikipedia.org 80
+	show http header from wiki
+	nc -> net cat(handy tool mentally talking to internet services.)
+		connecting to a port and sending a string over it
+		a thin wrapper over tcp
+	| pipe: take the ouput of first part program and feed it in as the input of the later program
+
+LAYER 			PROTOCOLS				CONCEPTS
+=========================================================================================
+Application		HTTP,SSH 				URLs, pw, head command, server headers, web pages
+Transport 		TCP, UDP 				Port numbers, sessions
+internet 		IP 						IP add., routes
+Hardware		Wifi, Ehernet, DSL		signal strength, access points
+
+
+man nc 	//netcat manual page
+nc -l 8080 	//use nc to listen on port 8080, that is server, cuz it is waiting for a program to connect to that port
+nc 127.0.0.1 8080 	//a connection between the ports
+	//that is a tcp only connection
+	//The connection may be terminated using an EOF (‘^D’ or 'ctrl + D').
+
+printf "GET / HTTP/1.1\r\nHost: www.example.com\r\n\r\n" | nc www.example.com 80
+	//do GET requests
+printf "GET / HTTP/1.1\r\nHost: www.example.com\r\n\r\n" | nc www.example.com 80 > example.txt
+	//save the results to the file example.txt
+
+
+Port Nr.
+	distinguish diff. app. and sessions on the same host.
+	//exp. 80 for HTTP, 22 for SSH
+	The port range that a normal (non-root) user can listen on is 1024 through 65535. But if you use root access (including sudo) then you can listen on ports down to 1.
+	On most sys. the lowesr 1,024 ports from 0 up to 1,023, are reserved for programs that are started by the sys superuser account or root on Unix.
+
+	lsof	//lists open files, including network sockets(listening or connected)
+			//-i to list only network sockets
+		lsof -i | grep "LISTEN"
