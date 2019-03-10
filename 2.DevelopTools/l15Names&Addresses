@@ -1,0 +1,54 @@
+Hosts: a machine on the internet that might host services.
+
+Endpoints: the two machines or programs communicationg over the connection.
+
+DNS: Domain Name System, worldwide distributed directory of network information.
+	A-record(DNS Rrecord): Adress record used to find the address of a computer to the internet of a name.
+	DOMAIN NAME == REGISTAR == IP address
+	The resolver: the DNS client code built into operating system.
+
+	host 	// basic utility for looking up records in DNS.
+		-t a 	//a type of record for address
+
+	dig 	// in a form that is more readable for scripts
+				//question section: the request sent to the dns system
+				//answer section: what got back
+
+		CNAME: canonical name
+		AAAA("quad-A"): IPv6 Address
+		NS: DNS name server
+
+	DNS is a distributed directory. 
+		"A" record for www.greenspaceghost.com
+			-> nameserver for greenspaceghost.com
+			"NS" record for greenspaceghost.com
+				-> nameserver for com
+				(gTLD = global TOP-Level Domain)
+				"NS" record for com
+					-> root servers
+
+		make it faster and more complicated:
+			Client ==(what's the "A" record for www.example.com?)==> caching server <==> cache(no idea)
+			then caching server ask root server, root server sent com NS back, and the caching server ask com servers, and get the final answer back, noww caching server write the data in the cache for the next time, and sent to the client answer back.
+
+			In case of the cache cause problem (exp. address change), some user will see old address instead of the new one. 
+			To cut down on this kind of thing, DNS records have a time to live, or TTL (seconds), which tells caches how long to cache them for.
+
+			After the TTL expires, caching servers have to go back to the authoritative server again, look the record up, to make sure that their information is fresh.
+
+
+A single web server can handle requests from multiple sites(exa.com, exa.org point to a same server.)
+	Apache 	==> (virtual host configuration)
+	NGiNX 	==> (multiple server blocks)
+
+DNS domains are structured as a tree(.il, .ps, .net, .com)
+	www.google.com is a subdomain of google.com
+
+	The name www.github.com is a C-Name, an alias, for the A record, github.com
+	C-Name used to specify that a domain name is an alias for another domain.
+
+	Search Domain: a setting in the resolver cofiguration that makes the resolver look up names inside a domain.
+		domains.google.com to set up a DNS domain
+		add a A record pointing at the IPv4 address of development server
+
+		The port number field in the TCP packet header is 16 bits wide.(65535)
