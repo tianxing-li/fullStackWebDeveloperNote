@@ -1,0 +1,51 @@
+Reserved IP Addresses
+	IPv4 32bit
+	(0, 10, and 127) are blocks that are entirely reserved. 0,10,127 is an octet number in decimal form.
+	116, 169, 172, 192, 198, 203 are blocks that are partly reserved.
+	The entire cyan row (starting at 224 to 239) is set aside for IP multicast.
+	(starting at 240) was originally set aside for "future use" but was effectively lost due to being blocked as invalid.
+
+	1o bits of host part, but the top and bottom addresses of a netblock are reserverd, and the first address is the router usually, so 1021 addresses are available for hosts.
+
+	SUBNET MASKS: another way to rite network size, always used in network configuration.
+		a binary numver made of ones on the left and zeros on the right, indicates the size of network.
+			11111111 11111111 11111111 00000000 = 255.255.255.0 a /24 netblock
+
+	Erhernet interface: eth0
+	Wifi interface: wlan0
+	Loopback interface: lo
+		ip address: 127.0.0.1
+	Tunnel interface
+	Virtual machine interface
+
+	ip addr show	//find out what interfaces, machine has
+	ifconfig | less
+
+router: connects two different IP networks, act as a gateway. host on one network that want to send traffic to the other one, forward that traffic through the router.
+	Most hosts might have only one interface, with an IPv4 address on it, arouter will have two or more.
+	The host on a local network knows about a default gateway, which is a router that's connected toward the rest of the Internet.
+		The default gateway may also have a default gateway itself. Eventually go woward the rest of the Internet, eventually reach the defaultless part(where routers on major transit ISPs know about hte global routing table, the directory of all public IP networks. the core has no more default gateways.)
+
+	Find default gateway:
+		ip route show default
+		netstat -nr
+
+
+NAT: Network address translation
+	henever traffic goes between the private network behind the router and the public internet, the router has to rerite or translate to the network addresses on it. 
+	NAT
+	inside address, port				outside address, port
+	192.168.0.42:17384					206.190.36.45:443
+	192.168.0.17:9487					216.58.192.14:80
+	192.168.0.17:5497					74.125.141.26:25
+
+	Router got the single public ip address, and other device under the router got private addresses.
+	Private address netblocks (RFC1918):
+		10.0.0.0/8
+		172.16.0.0/12
+		192.168.0.0/16 
+		(most common on home routers 192.168.0.0/24) => default gateway of 192.168.0.1
+
+	google "my ip address" can show the public address that now connected
+
+ipv6 test http://test-ipv6.com
