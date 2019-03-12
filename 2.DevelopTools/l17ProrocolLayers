@@ -1,0 +1,122 @@
+Protocol			Concepts 			where the code is 			failures
+===================================================================================================
+HTTP			resources, URLs,		Flask, Apache, 				error codes show responses
+				verbs, cookies, ...		browsers, ...
+TCP				ports, sessions,		OS kernel, 					broken connections timeouts
+				stream sockets			System libraries
+IP				IP addresses,			OS kernel,					various
+				Packets					routers
+Wifi			access points,			device drivers				network unavailable
+				WPA passords
+
+
+sudo tcpdump -n host 8.8.8.8 //catch traffic that's gong beteen localhost and the host at 8.8.8.8
+	// monitor traffic for any netork application
+sudo tcpdump -n port 53
+sudo tcpdump -n port 80
+
+17:22:26.018224 IP6 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496 > 2606:2800:220:1:248:1893:25c8:1946.80: Flags [S], seq 2099385522, win 28800, options [mss 1440,sackOK,TS val 323732804 ecr 0,nop,wscale 7], length 0
+
+17:22:26.130157 IP6 2606:2800:220:1:248:1893:25c8:1946.80 > 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496: Flags [S.], seq 328975974, ack 2099385523, win 24160, options [mss 1220,sackOK,TS val 3771188040 ecr 323732804,nop,wscale 9], length 0
+
+17:22:26.130216 IP6 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496 > 2606:2800:220:1:248:1893:25c8:1946.80: Flags [.], ack 1, win 225, options [nop,nop,TS val 323732916 ecr 3771188040], length 0
+
+17:22:26.130347 IP6 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496 > 2606:2800:220:1:248:1893:25c8:1946.80: Flags [P.], seq 1:38, ack 1, win 225, options [nop,nop,TS val 323732916 ecr 3771188040], length 37: HTTP: HEAD / HTTP/1.1		//request real send
+
+17:22:26.252187 IP6 2606:2800:220:1:248:1893:25c8:1946.80 > 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496: Flags [.], ack 38, win 48, options [nop,nop,TS val 3771188165 ecr 323732916], length 0
+
+17:22:26.253783 IP6 2606:2800:220:1:248:1893:25c8:1946.80 > 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496: Flags [P.], seq 1:339, ack 38, win 48, options [nop,nop,TS val 3771188165 ecr 323732916], length 338: HTTP: HTTP/1.1 200 OK 	//response real get
+
+17:22:26.253814 IP6 2a02:8071:3e84:2800:e9ec:bb1b:f1e2:583e.34496 > 2606:2800:220:1:248:1893:25c8:1946.80: Flags [.], ack 339, win 234, options [nop,nop,TS val 323733040 ecr 3771188165], length 0
+
+01:17:29.785301 IP6 2a02:8071:3e84:2800:d0c:1a2:6c72:4ccf.42218 > 2606:2800:220:1:248:1893:25c8:1946.80: Flags [F.], seq 38, ack 316, win 234, options [nop,nop,TS val 2726621614 ecr 792895017], length 0
+
+01:17:29.892301 IP6 2606:2800:220:1:248:1893:25c8:1946.80 > 2a02:8071:3e84:2800:d0c:1a2:6c72:4ccf.42218: Flags [F.], seq 316, ack 39, win 48, options [nop,nop,TS val 792902291 ecr 2726621614], length 0
+
+01:17:29.892338 IP6 2a02:8071:3e84:2800:d0c:1a2:6c72:4ccf.42218 > 2606:2800:220:1:248:1893:25c8:1946.80: Flags [.], ack 317, win 234, options [nop,nop,TS val 2726621721 ecr 792902291], length 0
+
+	time stamp, IP Type, source address.port > destination address.port:
+	FLAGS in TCP:
+		SYN (synchronize) [S] — This packet is opening a new TCP session and contains a new initial sequence number.
+		
+		FIN (finish) [F] — This packet is used to close a TCP session normally. The sender is saying that they are finished sending, but they can still receive data from the other endpoint.
+		
+		PSH (push) [P] — This packet is the end of a chunk of application data, such as an HTTP request.
+		
+		RST (reset) [R] — This packet is a TCP error message; the sender has a problem and wants to reset (abandon) the session.
+		
+		ACK (acknowledge) [.] — This packet acknowledges that its sender has received data from the other endpoint. Almost every packet except the first SYN will have the ACK flag set.
+		
+		URG (urgent) [U] — This packet contains data that needs to be delivered to the application out-of-order. Not used in HTTP or most other current applications.
+
+
+
+HTTP connection used a keep alive:
+	browser 										server
+			>>>>GET /... Connection: keep-alive>>>>
+			<<<<contents of main page<<<<<<<<<<<<<<
+			>>>>GET /favicon.ico>>>>>>>>>>>>>>>>>>>
+			<<<<favicon file<<<<<<<<<<<<<<<<<<<<<<<
+
+
+			one request, as seen at the HTTP Layer
+			>>>> "GET /"				>>>>>>>>>>>
+			<<<< page data				<<<<<<<<<<<
+			one exchange the HTTP level may be a shorthand for a bunch of exanges on a low level
+
+
+at first two end points have to get into aggreement that a connection exists. 
+Before that, the client konws the server's IP address and port number, but the server doesnot know anything about the client. 
+So the client has to send the server a message with, among other things, its IP address and port number, saying that it wants to connect to the server on its IP and port. 
+But TCP does more than that. It also keeps track of the data that each end point is sent. And make sure that the other end point has received it, and make sure that application sees that data in order even if the underlying network reorders the packets.
+TCP use a sequence number on each packet, if one or more goes missing, the other end point will notice there is no acknowledgement and will re-transmit it.
+SeqNo. start out at random number, so very unlikely to get confused between one connection and another.
+
+
+What TCP does 											How TCP does it
+communicate between two hosts							IP layer (addresses + routing)
+multiple applications per host 							port numbers
+in-order delivery										sequence numbers
+lossless delivery										acknowledgement + retransmission
+keeping connections distinct 							random initial sequence numvers
+
+
+host A, port:17924										host B, port: 80
+
+		>>> #12345 syn >>>
+		<<< #9876 syn ACK12346 <<<
+		>>> #12346 syn ACK9877 >>>
+			hand shake
+
+		>>> #12347 ACK9877 "GET/" >>>
+		>>> #12348 FIN >>>
+		<<< #9877 ACK 12349 <<<
+			request
+
+		<<< #9878 ACK12349 page data <<<
+		>>> #12349 ACK9879 >>>
+ 			replay last two steps to get all the data needed
+
+ 		<<< #9879 FIN <<<
+ 		>>> #12350 ACK9880 <<<
+ 			finished
+
+ 		except "GET/" and page data, others' length is zero
+
+Three-way handshake
+	first packet sent to initiate a TCP session always has the SYN flag set. This initial SYN packet is what a client sends to a server to start opening a TCP connection. This is the first packet you see in the sample tcpdump data, with Flags [S]. This packet also contains a new, randomized sequence number (seq in tcpdump output).
+	If the server accepts the connection, it sends a packet back that has the SYN and ACK flags, and acknowledges the initial SYN. This is the second packet in the sample data, with Flags [S.]. This contains a different initial sequence number.
+	(If the server doesn't want to accept the connection, it may not send anything at all. Or it may send a packet with the RST flag.)
+	Finally, the client acknowledges receiving the SYN|ACK packet by sending an ACK packet of its own.
+
+
+Four-way teardown
+	When either endpoint is done sending data into the connection, it can send a FIN packet to indicate that it is finished. The other endpoint will send an ACK to indicate that it has received the FIN.
+	In the example HTTP data, the client sends its FIN first, as soon as it is done sending the HTTP request. This is the first packet containing Flags [F.].
+	Eventually the other endpoint will be done sending as well, and will send a FIN of its own. Then the first endpoint will send an ACK.
+
+In between
+	In a long-running connection, there will be many packets exchanged back and forth. Some of them will contain application data; others may be only acknowledgments with no data (length 0). However, all TCP packets in a connection except the initial SYN will contain an acknowledgment of all the data that the sender has received so far. Therefore, they will all have the ACK flag set. (This is why tcpdump depicts the ACK flag with just a dot: it's really common.)
+
+ICMP and UDP don't have TCP flags
+	If you look at tcpdump data for pings or basic DNS lookups, you will not see flags. This is because ping uses ICMP, and basic DNS lookups use UDP. These protocols do not have TCP flags or sequence numbers.
