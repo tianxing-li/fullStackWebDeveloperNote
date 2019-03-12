@@ -1,0 +1,56 @@
+traceroute google.com	
+	//display the route all the IP addresses of all the routers that it took or traffic to get there
+mtr google.com
+	//advanced traceroute tools
+
+RTT (Round Trip Time) from sending time to receive response time, not arrive time. It's an importatn measurement for the network.
+
+Trace out packet paths is not intentionally built into the Internet protocols
+	To prevetn infinite loops: 
+		every packet has a time to live(TTL) field, which starts at some large number(exp. 255), and reduced by one each time that packet hits a router. 
+		As it moves through the network, each router reduces the TTL on the packet by one as it passes it on, all the way until it finally gets to its destination. 
+		If routers are misconfigured so that packets flow around in a infinite loop, eventually the time to live on each packet will drop to zero, and it will expire.
+			This helps keep momentary loops from crashing large parts of the netork with an overload of traffic.
+		When a packet's TTL expires, the router that last received it, sends a tiny error message back to the packet's original sender. And that message says that the packet's TTL expired and it gives the address of the router that saw that packet die.
+
+		SO, sending packets to a destination with progressively increasing TTLs starting at one, the traceroute program gets an error message back from each router on the way to that destination.
+		And it can use those error messages to reconstruct the path which is just the list of those routers in order that a packet takes to get to that destination.
+
+
+TCP:
+	congestion control
+	slow start
+	reliable transmit(seq.No, retransmit)
+	RED(Radom Early Detection)
+	AIMD(add increase multiple decrease)
+
+network spped:
+	Bandwidth
+	Latency
+
+
+Middleboxes 1: Firewalls & Filtering
+	Firewalls are devices that network operators can use to filter traffic that's coming into or leaving their network. A firewall is one example of a class of network devices called middleboxes.
+
+	Middleboxes: devices that inspect, modify, or filter network traffic.
+		Other examples of middleboxes include intrusion detection systems and load balancers. 
+		Technically, it's only a middle-box if it's a separate device from the client or server — server-side "firewalls" like Linux iptables aren't middleboxes.
+
+	The most common configuration for a firewall is to drop any incoming traffic except traffic to (host, port) pairs that are supposed to be receiving connections from the Internet. 
+	This lets the network administrator be sure that other machines on the network — like backend databases or administrative systems — aren’t going to get direct attacks from outside.
+	But firewalls can cause trouble for application developers. If developper is trying to test or deploy a network app and there's a firewall between his server and the user, that firewall can potentially interfere with his app or block it completely.
+		 In order to deploy an application on a particular server and port, it helps to know what kind of firewall might be between you and your user. 
+		 !!! One of the reasons that many non-Web applications use HTTP as a transport is that HTTP is often unblocked at firewalls even when other ports are blocked.
+		 	===> attack to port 80
+
+		 Aside from blocking traffic outright, middleboxes can also alter traffic, for instance replacing web pages with error messages.(children control, sensitive website control.)
+		 some countries have deployed large-scale firewalls or filters to censor their citizens' access to the global Internet.
+
+Middleboxes 2: Proxies & NAT
+	With NAT, several devices can access Internet resources through a single public IP address, with the NAT device using port numbers to match up connections on the inside and outside.
+	For end-users, NAT devices overlap with firewalls. Typical home routers can act as both a NAT and a simple firewall, often having the ability to block or filter at a very basic level.
+
+	At a larger scale, ISPs and other organizations have deployed NAT devices for their whole customer networks, called carrier-grade NAT. This is very common for mobile networks, and also for ISPs in the developing world, where there never were anywhere near enough addresses allocated for the number of users.
+
+	Another way that can happen is through the use of web proxies. Whereas a NAT works at the IP level, rewriting packets, a web proxy works at the HTTP level, taking queries from browsers and sending them out to web servers.
+	Many organizations use web proxies for caching, including some ISPs. From the standpoint of a web developer or site operator, traffic from a busy proxy looks much the same as traffic from a busy NAT: queries for many users, on many actual computers, are funneled through a single public IP address.
