@@ -1,0 +1,34 @@
+Relational Database:
+	persistent storage	(all database)
+	sage concurrent access by multiple programs/users (all database)
+	flexible query language with aggregation and join operations (relational only)
+	constraints	(relational only)
+	rules for protecting consistency of data (relaional only)
+
+Anatomy of a Table
+	table name
+	column name(type)
+	Aggregation: count, avg, max, min, sum
+
+	select sth(define, exp a ColumnName) from ATable where ColumnName = "anticipate value"
+		
+
+		code	>>>>	query[SQL]		>>>>	database === data on disk
+				<<<<	result[table]	<<<<
+
+sudo apt install postgresql-client-common
+
+joined //combine two or more table together
+
+uniqueness and keys
+	a column that uniquely identifies the row in a table can be called a primary key.
+
+
+joining tables (count aggregation)
+	select
+		TableA.ColumnName1,
+		TableA.ColumnName2,
+		TableB.ColumnName3
+		from TableA join TableB
+			on TableA.ColumnName2 =  TableB.ColumnName2
+			where ColumnNameX = "some solid value";	// x = 1, 2, 3; attachment
