@@ -1,0 +1,232 @@
+Database System				DB-API module
+===============================================
+SQLite						sqlite3
+PostgreSQL					psycopg2
+ODBC						pyodbc
+MySQL						mysql.connector
+...							...
+
+EXP code with DB API(python)
+{
+	import sqlite3
+	conn = sqlite3.connect("Cookies")	// "Cookies" is the name of the DB, that we connected to
+										// if use a DB from network, it should include hostname, username, pw and other info.
+										// .connect(...) return a connected object, which could use before closed
+	cursor = conn.cursor()		//cursor is used to scan the return results.
+	cursor.execute("select host_key from cookies limit 10")	//execute(...) fetch all the result
+															// commit()
+															// roll back()
+	results = cursor.fetchall()
+	print results
+	conn.close()
+}
+another example:
+{
+	import sqlite3
+
+	# Fetch some student records from the database.
+	db = sqlite3.connect("students")
+	c = db.cursor()
+	query = "select name, id from students order by name;"
+	c.execute(query)
+	rows = c.fetchall()
+
+	# First, what data structure did we get?
+	print "Row data:"
+	print rows
+
+	# And let's loop over it too:
+	print
+	print "Student names:"
+	for row in rows:
+	  print "  ", row[0],":", row[1]
+
+	db.close()
+
+}
+
+Inserts in DB API
+	atomicity: a transaction happens as a whole or not at all.
+{
+	# This code attempts to insert a new row into the database, but doesn't
+	# commit the insertion.  Add a commit call in the right place to make
+	# it work properly.
+	# 
+
+	import sqlite3
+
+	db = sqlite3.connect("testdb")
+	c = db.cursor()
+	c.execute("insert into balloons values ('blue', 'water') ")
+	db.commit()
+	db.close()
+
+}
+vagrant up
+vagrant ssh
+cd /vagrant 		//can open the share files under the same location
+cd forum
+psql forum
+	\d post 		//check the table 'post' properties
+	\dt 	— list all the tables in the database.
+	\dt+ 	— list tables plus additional information (notably, how big each table is on disk).
+	\H 		— switch between printing tables in plain text vs. HTML.
+
+	select * from posts \watch
+		(Note that \watch replaces the semicolon.) This will display the contents of the posts table and refresh it every two seconds, so you can see changes to the table as you use the app.
+Post database exp
+{
+	#!/usr/bin/env python3
+	# 
+	# A buggy web service in need of a database.
+
+	from flask import Flask, request, redirect, url_for
+
+	from forumdb import get_posts, add_post
+
+	app = Flask(__name__)
+
+	# HTML template for the forum page
+	HTML_WRAP = '''\
+	<!DOCTYPE html>
+	<html>
+	  <head>
+	    <title>DB Forum</title>
+	    <style>
+	      h1, form { text-align: center; }
+	      textarea { width: 400px; height: 100px; }
+	      div.post { border: 1px solid #999;
+	                 padding: 10px 10px;
+	                 margin: 10px 20%%; }
+	      hr.postbound { width: 50%%; }
+	      em.date { color: #999 }
+	    </style>
+	  </head>
+	  <body>
+	    <h1>DB Forum</h1>
+	    <form method=post>
+	      <div><textarea id="content" name="content"></textarea></div>
+	      <div><button id="go" type="submit">Post message</button></div>
+	    </form>
+	    <!-- post content will go here -->
+	%s
+	  </body>
+	</html>
+	'''
+
+	# HTML template for an individual comment
+	POST = '''\
+	    <div class=post><em class=date>%s</em><br>%s</div>
+	'''
+
+
+	@app.route('/', methods=['GET'])
+	def main():
+	  '''Main page of the forum.'''
+	  posts = "".join(POST % (date, text) for text, date in get_posts())
+	  html = HTML_WRAP % posts
+	  return html
+
+
+	@app.route('/', methods=['POST'])
+	def post():
+	  '''New post submission.'''
+	  message = request.form['content']
+	  add_post(message)
+	  return redirect(url_for('main'))
+
+
+	if __name__ == '__main__':
+	  app.run(host='0.0.0.0', port=8000)
+
+
+}
+{
+	# "Database code" for the DB Forum.
+
+	import psycopg2
+
+	DBNAME = "forum"
+
+	def get_posts():
+	  """Return all posts from the 'database', most recent first."""
+	  db = psycopg2.connect(database=DBNAME)
+	  c = db.cursor()
+	  c.execute("select content, time from posts order by time desc")
+	  return c.fetchall()
+	  db.close()
+
+	def add_post(content):
+	  """Add a post to the 'database' with the current timestamp."""
+	  db = psycopg2.connect(database=DBNAME)
+	  c = db.cursor()
+	  c.execute("insert into posts values (%s)", (content,))
+	  	//!!! WARNING: never, never, never use Python string concatenation(+) or string parameters interpolation(%) to pass variables to a SQL query string. Not even at gunpoint.
+	  	//c.execute("insert into posts values ('%s')" % content)
+	  		// if i type "'); delete from posts; --", then I can delete all the post that in the database, that's a sql injection.
+	  db.commit()
+	  db.close()
+}
+
+Library Bleach for py (linkify text safely, applying filters)
+	https://bleach.readthedocs.io/en/latest/
+	pip install bleach
+		>>> import bleach
+		>>> bleach.clean('an <script>evil()</script> example')
+		u'an &lt;script&gt;evil()&lt;/script&gt; example'
+		>>> bleach.linkify('an http://example.com url')
+		u'an <a href="http://example.com" rel="nofollow">http://example.com</a> url
+
+
+
+SQL
+	update table set column = value where restriction;
+
+	=> where content = 'spam post'
+	=> where content like '%awful%'
+
+	exp:
+		update posts set content = 'new one' where content like '%spam%';
+
+	delete from table where restriction;
+
+
+xkcd!!!!
+https://xkcd.com/327/
+http://bobby-tables.com/
+
+
+
+======================================================================================
+Python DB-API Quick Reference
+For a full reference to the Python DB-API, see the specification and the documentation for specific database modules, such as sqlite3 and psycopg2.
+
+module.connect(...)
+Connect to a database. The arguments to connect differ from module to module; see the documentation for details. connect returns a Connection object or raises an exception.
+
+For the methods below, note that you don't literally call (for instance) Connection.cursor() in your code. You make a Connection object, save it in a variable (maybe called db) and then call db.cursor().
+
+Connection.cursor()
+Makes a Cursor object from a connection. Cursors are used to send SQL statements to the database and fetch results.
+
+Connection.commit()
+Commits changes made in the current connection. You must call commit before closing the connection if you want changes (such as inserts, updates, or deletes) to be saved. Uncommitted changes will be visible from your currect connection, but not from others.
+
+Connection.rollback()
+Rolls back (undoes) changes made in the current connection. You must roll back if you get an exception if you want to continue using the same connection.
+
+Connection.close()
+Closes the connection. Connections are always implicitly closed when your program exits, but it's a good idea to close them manually especially if your code might run in a loop.
+
+Cursor.execute(statement)
+Cursor.execute(statement, tuple)
+Execute an SQL statement on the database. If you want to substitute variables into the SQL statement, use the second form — see the documentation for details.
+
+If your statement doesn't make sense (like if it asks for a column that isn't there), or if it asks the database to do something it can't do (like delete a row of a table that is referenced by other tables' rows) you will get an exception.
+
+Cursor.fetchall()
+Fetch all the results from the current statement.
+
+Cursor.fetchone()
+Fetch just one result. Returns a tuple, or None if there are no results.
+
