@@ -1,0 +1,101 @@
+-- in sql any line that begins with two dashes is a comment.
+
+select name, birthdate from animals where species = 'gorilla';
+	//Every select query in SQL returns a table. 
+	//In SQL, the * symbol is a wildcard for columns — it matches all columns in the table.
+
+Types in the sql:
+	text - a string of any length, liek py's srt type. values are written in 'signle quotes'.
+	integer - like py's int type, but with different limits.
+	date - a calendar date. values are written like this: '2014-04-13'.
+		//always put 'single quotes' around text strings and date/time values.
+			// '2012-11-23' can be a date or text.
+			// 2012-11-23 is a integer expression. (2012-11-23=1978)
+
+	Text and string types
+		text — a string of any length, like Python str or unicode types.
+		char(n) — a string of exactly n characters.
+		varchar(n) — a string of up to n characters.
+
+	Numeric types
+		integer — an integer value, like Python int.
+		real — a floating-point value, like Python float. Accurate up to six decimal places.
+		double precision — a higher-precision floating-point value. Accurate up to 15 decimal places.
+		decimal — an exact decimal value.
+
+	Date and time types
+		date — a calendar date; including year, month, and day.
+		time — a time of day.
+		timestamp — a date and time together.
+
+select name, birthdate from animals where species = 'gorilla' and(or, not) name = 'Jax';
+//keyword			| keywords		| row restriction		| another restriction
+	//columns				tables
+	not sth = 'aaa'		<==> 	sth != 'aaa'
+		attention add the brackets() if needed
+
+Comparison Operators
+	= < > <= >= !=
+
+select name from animals 
+where species = 'llama' and 
+( birthdate >= '1995-01-01') and 
+( birthdate <= '1998-12-31');
+
+In SQL there is no way to list tables + coumns in a standard way, each DB has its own code.
+
+
+create table animals (  
+       name text,
+       species text,
+       birthdate date);
+
+select max(name) from animals;	//that max means the char max, not longest.
+select * from animals limit 10;	//limit 10 show the first 10.
+select * from animals where species = 'orangutan' order by birthdate (desc);	// order the table by birthdate (desc= reverse order)
+select name, birthdate from animals order by name limit 10 offset 2; //offset means begin position
+select species, min(birthdate) from animals group by species;	//min from group by
+select name, count(*) as num from animals group by name order by num desc;
+	//In order to apply having to an aggregated column, you'll want to give it a name using as.
+
+	... limit count
+	Return just the first count rows of the result table.
+		The limit clause sets a limit on how many rows to return in the result table.
+
+	... limit count offset skip
+	Return count rows starting after the first skip rows.
+
+	... order by columns
+	... order by columns desc
+	Sort the rows using the columns (one or more, separated by commas) as the sort key. Numerical columns will be sorted in numerical order; string columns in alphabetical order. With desc, the order is reversed (desc-ending order).
+
+	... group by columns
+	Change the behavior of aggregations such as max, count, and sum. With group by, the aggregation will return one row for each distinct value in columns.
+
+Insert: adding rows
+	insert into table ( column1, column2, ... ) values ( val1, val2, ... );
+
+	If the values are in the same order as the table's columns 
+	insert into table values ( val1, val2, ... );
+
+
+
+select name from animals, diet where animals.species = diet.species and food = 'fish';
+select name from animals join diet on animals.species = diet.species where food = 'fish';
+
+
+After aggregating ==> having
+	where is a restriction on the source tables.
+	having is a restriction on the result "after aggregation!"
+
+
+https://s3.amazonaws.com/video.udacity-data.com/topher/2018/April/5acfbfa3_fsnd-virtual-machine/fsnd-virtual-machine.zip
+cd FSND-Virtual-Machine/vagrant/
+vagrant up
+vagrant ssh
+psql	//start PostgreSQL
+ctrl-D 	//exit
+
+
+===========================================================================================
+Reference — Elements of SQL
