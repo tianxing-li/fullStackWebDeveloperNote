@@ -1,0 +1,122 @@
+a simple guide to 5 normal forms in relational DB theory
+	http://www.bkent.net/Doc/simple5.htm
+
+1. Normalazation
+	in a normalized database, the realtionships among the tables match the relationships that are really there among the data.
+		a. every row has the same number of columns.
+		b. a unique key, and everything in a row says something about the key.
+		C. facts that do not relate to the key belong in different tables
+		d. tables should not imply relationship that do not exist
+
+		https://en.wikipedia.org/wiki/Database_normalization
+
+create table and types
+	create table tablename(
+		column1 type [constraints],
+		column2 type [constraints],
+		...
+		[row constraints]);
+
+creating and dropping:
+	create database name[options];
+	drop database name[options];
+	drop table name[options];
+
+	\c name  \\to connect a database, can not drop a connected database
+
+declaring primary keys:
+	create table students(
+		id serial primary key,
+		name text,
+		birthdate text
+	);
+
+	create table postal_places(
+		postal_code text,
+		country text,
+		name text,
+		primary key(postal_code, country)
+	);
+
+	If we set up a constraint (such as a primary key) we're asking for the database to help ensure that our data makes sense.
+
+declaring relationships
+	references: provides referential integrity -columns that are supposed to refer to each other are guarnateed to do so.
+	{
+		create table sales(
+			sku text references products,
+				//if in Table products has also a sku column, if not then Tablename(Columnname)
+			sale_date date,
+			count integer
+		);
+	}
+
+Foreign Keys
+	a column or set of columns in one table, that uniquely identifies rows in another table.
+
+	create table students(
+		id serial primary key,
+		name text);
+	create table courses(
+		id text primary key,
+		name text);
+	create table grades(
+		student integer references students(id),	//foreign key
+		course text references courses(id),			//foreign key
+		grade text);
+
+
+self joins
+	create table residences(
+		id integer references students,
+		building text references buildings(name),
+		room text);
+
+	select a.id, b.id, a.building, a.room
+		from residences as a, residences as b
+		where a.building = b.building
+			and a.room = b.room
+			and a.id < b.id
+		order by a.building, a.room;
+
+
+
+Counting: A column aggregated with the count aggregation function will return the number of rows in the table, or the number of rows for each value of a group by clause.
+
+	select count(*) from animals;
+	-- returns the number of animals in the zoo
+
+	select count(*) from animals where species = 'gorilla';
+	-- returns the number of gorillas
+
+	select species, count(*) from animals group by species;
+	-- returns each species’ name and the number of animals of that species
+
+	=======left join=======
+	select products.name, products.sku, count(sales.sku) as num
+	  from products left join sales
+	    on products.sku = sales.sku
+	  group by products.sku;
+	--This query will give us a row for every product in the products table, even the ones that have no sales in the sales table.
+	--A regular (inner) join returns only those rows where the two tables have entries matching the join condition. A left join returns all those rows, plus the rows where the left table has an entry but the right table doesn’t. And a right join does the same but for the right table.
+
+Subqueries (subselect)
+	SELECT name, (SELECT max(pop) FROM cities WHERE cities.state = states.name)
+    FROM states;
+    	https://www.postgresql.org/docs/9.4/sql-expressions.html#SQL-SYNTAX-SCALAR-SUBQUERIES
+
+    SELECT col1
+	FROM tab1
+	WHERE EXISTS (SELECT 1 FROM tab2 WHERE col2 = tab1.col2);
+		https://www.postgresql.org/docs/9.4/functions-subquery.html
+
+	select name, weight from players, 
+	(select avg(weight) as av from players) as lower 
+	where weight < av;
+
+
+views
+	a view is a select query stored in the database in a way that lets you use it like a table.
+
+	create view viewname as select ...
+		// some database sysetem let us update and delete rows in a view.
