@@ -1,0 +1,80 @@
+psql -d news -f newsdata.sql
+	psql — the PostgreSQL command line program
+	-d news — connect to the database named news which has been set up for you
+	-f newsdata.sql — run the SQL statements in the file newsdata.sql
+
+Explore the data
+	psql -d news
+
+	\dt — display tables — lists the tables that are available in the database.
+	\d table — (replace table with the name of a table) — shows the database schema for that particular table.
+
+	in PY
+		db = psycopg2.connect("dbname=news")
+
+data slice
+	select split_part('/article/breas-love','/', 3);
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+==============================================================================================
+source code
+
+#Assignment: Logs Analysis for news
+
+import psycopg2
+import datetime
+
+db = psycopg2.connect("dbname=news")
+
+task= db.cursor()
+
+#statis views of article
+task.execute("create view mostreads as\
+                select split_part(path, '/', 3) as article,\
+                 count(*) as n from log\
+                 group by article\
+                 order by n desc;")
+#statis report for connection
+task.execute("create view errorReport as\
+                select date(time) as date,\
+                count(*) as errors from log where not status='200 OK'\
+                group by date;")
+task.execute("create view connReport as\
+                select date(time) as date,\
+                count(*) as conn from log\
+                group by date;")
+
+#Task 1
+task.execute("create view mostreadarticle as\
+                select title, n, author from articles, mostreads where slug=article\
+                    order by n desc;")
+print('1. What are the most popular three articles of all time?')
+task.execute("select * from mostreadarticle limit 3;")
+t1 = task.fetchall()
+for i in t1:
+    print('\"{}\" - {} views'.format(i[0], i[1]))
+        
+#Task 2
+task.execute("select name, m from authors, \
+                (select author, sum(n) as m from mostreadarticle group by author) \
+                    as totalviews\
+                where author=authors.id\
+                order by m desc;")
+print('\n2. Who are the most popular article authors of all time?')
+t2 = task.fetchall()
+for i in t2:
+    print('{} - {} views'.format(i[0], i[1]))
+
+#Task 3
+task.execute("create view errrate as\
+                select errorReport.date, (1.0*errors/conn) as ratio\
+                from errorReport join connReport \
+                on errorReport.date=connReport.date;")
+# I have a little trouble here, I tried to use "having" to filter the data, but it said ratio is not here, so I have to do it again.
+task.execute("select * from errrate where ratio>0.01;")
+print('\n3. On which days did more than 1% of requests lead to errors?')
+t3 = task.fetchall()
+for i in t3:
+    print('{} - {:.1f}%errors'.format(i[0].strftime("%b %d, %Y"), i[1]*100))
+
+db.close()

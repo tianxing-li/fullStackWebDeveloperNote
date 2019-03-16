@@ -93,7 +93,7 @@ Counting: A column aggregated with the count aggregation function will return th
 	-- returns each species’ name and the number of animals of that species
 
 	=======left join=======
-	select products.name, products.sku, count(sales.sku) as num
+	select products.name, products.sku, sum(sales.sku) as num
 	  from products left join sales
 	    on products.sku = sales.sku
 	  group by products.sku;
