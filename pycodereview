@@ -1,0 +1,16 @@
+The first line in the Python file should be a shebang, which specifies which Python interpreter should be used to run your code:
+
+#!/usr/bin/env python
+for Python 2
+#!/usr/bin/env python3
+for Python 3
+You can check this reference to understand better what's the shebang and why it’s important:
+
+https://en.wikipedia.org/wiki/Shebang_(Unix)
+
+The code conforms to the PEP8 style recommendations.
+You can install the pycodestyle tool to test this, with pip install pycodestyle or pip3 install pycodestyle (Python 3).
+
+In order for this requirement to pass, running the pycodestyle tool on your code should produce zero warnings.
+
+(pycodestyle was formerly known as pep8. These are the same thing.)
