@@ -72,7 +72,7 @@ Apple Logo ![Apple](https://www.brachaprinting.com/wp-content/uploads/2013/10/Ap
 
 ## 代码块
 ```javascript
-console.log("Hello Wordl");
+console.log("Hello World");
 ```
 ## 表格
 
