@@ -1,0 +1,292 @@
+python: https://classroom.udacity.com/courses/ud036
+sql: https://classroom.udacity.com/courses/ud197
+html&css: https://classroom.udacity.com/courses/ud001
+
+CRUD: Create, Read, Upgrate, Delelte
+
+ORM: Object-Relational Mapping
+	//converting code from one form to another.
+		Database 		>>>>		ORM			>>>>		Python Cde
+					SQL Statement		Python Object
+						<<<<					<<<<
+
+	exp.: SQL Alchemy https://www.sqlalchemy.org/
+
+creating a database with sqlalchemy
+1. configuration: import all the necessary module
+	generall should not change from project to project
+
+	at beginning of file
+	imports all modules nedded
+	creates instance of declarative base
+
+	at end of file 
+	creates(or connects the) database and adds tables and columns
+```
+	import sys
+
+	from sqlalchemy import Column, ForeignKey, Integer, String
+
+	from sqlalchemy.ext.declarative import declarative_base
+
+	from sqlalchemy.orm import relationship
+
+	from sqlalchemy import create_engine
+
+	Base = declarative_base() 	//make a instance for the import.
+
+	########################insert at end of file######################
+
+	engine = create_engine('sqlite:///restaurantmenu.db')
+
+	Base.metadata.create_all(engine)
+```
+2. class: represent our data in python
+	representation of table as a python class
+		extends the Base class
+	nested inside will be table and mapper code
+
+	inside each of classes, create a table representation.
+		representation of table inside the database
+		syntax:
+			__tablename__ = 'some_table'
+			
+```
+	class Restaurant(Base):
+		__tablename__ = 'restaurant'
+
+	class MenuItem(Base):
+		__tablename__ = 'menu_item'
+```
+
+3. table: represent specific table in database
+4. mapper: connect the column to the class they represent.
+	maps python objects to columns in our darabase
+		syntas:
+			columnName = Column(attributes, ...)
+
+		exp. attributs:
+			String(250) [maxlen. can be more than 250], Integer, relationship(Class), nullable = False [must have a value in order for the row to be created], primary_key = True, ForeignKey('some_table.id')
+
+```
+	#inside Restaurant Class
+		name = Column(String(80), nullable = False)
+
+		id = Column(Integer, primary_key = True)
+	
+
+
+	#inside MenuItem Class
+		name = Colum(String(80), nullable = False)
+		id = Column(Integer, primary_key= True)
+
+		course = Column(String(250))
+
+		description = Column(String(250))
+
+		price = Column(String(8))
+
+		restaurant_id = Column(Integer, ForeignKey('resturant.id'))
+
+		restaurant = relationship(Restaurant)
+```
+	
+CRUD Create
+```
+# import dependencies form SQLAlchemy
+from sqlalchemy import  create_engine
+from sqlalchemy.orm import sessionmaker
+
+# import the objective database already existed
+from database_setup import Base, Restaurant, MenuItem
+
+# communicate with the objective database
+engine = create_engine('sqlite:///restaurantmenu.db')
+
+# bind the engine to the base class, make the connections between class definitions and the corresponding tables.
+Base.metadata.bind = engine
+
+# create a sessionmaker object. this establishes a link of communication between code executions and the engine
+DBSession = sessionmaker(bind = engine)
+
+# In order to CRUD infos on database, SQLAlchemy executes database operations via an interface. (session)
+# A session allows us to write down all the commands execute, but not send them to the database until call a commit.
+
+
+# create an instance
+session = DBSession()
+
+# call a method from within session, then can make a change to database
+# first all of the obejects loaded into a database session object in staging zone
+# until make commit, change made to the objects into db
+# 2. making a new entry in db
+
+"""
+exp.
+	newEntry = ClassName(property = "value", ...)
+	session.add(newEntry)
+	session.commit()
+"""
+
+# add data
+myFirstRestaurant = Restaurant(name = "Pizza Palace")
+session.add(myFirstRestaurant)
+session.commit()
+
+# check the data in db
+session.query(Restaurant).all()
+# result: [<database_setup.Restaurant object at 0x7fb13d9fcbd0>] 
+
+# add a menu
+cheesepizza = MenuItem(name = "Cheese Pizza", description = "Made with all natural ingredients and fresh mozzarella", course = "Entree", price = "$8.99", restaurant = myFirstRestaurant)
+session.add(cheesepizza)
+session.commit()
+
+session.query(MenuItem).all()
+# result: [<database_setup.MenuItem object at 0x7fb13d4da0d0>]
+
+```
+
+CRUD Read
+	use the lotsofmenus.py to extend the database
+	if i use ```session.query(MenuItem).all()``` or ```session.query(Restaurant).all()```, I just can get the info like the stored addresss.
+```
+items = session.query(MenuItem).all()
+for item in items:
+    print(item.name)
+```
+	https://docs.sqlalchemy.org/en/latest/orm/query.html
+
+CRUD Update
+	1. find entry
+	2. reset values
+	3. add to session
+	4. session.commit()
+		change "Urban Burger"'s "veggieBurger"'s price to $2.99
+			 Step 1: find the price for veggieBurger in Urban Burger
+```
+veggieBurgers = session.query(MenuItem).filter_by(name = 'Veggie Burger')
+for veggieBurger in veggieBurgers:
+    print(veggieBurger.id)
+    print(veggieBurger.price)
+    print(veggieBurger.restaurant.name)
+    print("\n")
+```
+		from the result, use the right id find the passed item
+		and change the values
+```
+UrbanVeggieBurger = session.query(MenuItem).filter_by(id = 2).one()
+# use one function just response one object
+
+# test
+print(UrbanVeggieBurger.price)
+# test
+
+UrbanVeggieBurger.price = '$2.99'
+session.add(UrbanVeggieBurger)
+session.commit()
+```
+		change several values
+```
+for veggieBUrger in veggieBurgers:
+    if veggieBurger.price != '$2.99':
+        veggieBurger.price = '$2.99'
+        session.add(veggieBurger)
+        session.commit()
+```
+
+CRUD Delete
+	1. find entry
+	2. session.delete(entry)
+	3. session.commit()
+```
+spinach = session.query(MenuItem).filter_by(name = 'Spinach Ice Cream').one()
+
+# test
+print(spinach.restaurant.name)
+# test
+
+session.delete(spinach)
+session.commit()
+```
+
+CRUD Review
+
+	Operations with SQLAlchemy
+		In this lesson, we performed all of our CRUD operations with SQLAlchemy on an SQLite database. Before we perform any operations, we must first import the necessary libraries, connect to our restaurantMenu.db, and create a session to interface with the database:
+
+		```
+		from sqlalchemy import create_engine
+		from sqlalchemy.orm import sessionmaker
+		from database_setup import Base, Restaurant, MenuItem
+
+		engine = create_engine('sqlite:///restaurantMenu.db')
+		Base.metadata.bind=engine
+		DBSession = sessionmaker(bind = engine)
+		session = DBSession()
+		```
+	
+	CREATE
+		We created a new Restaurant and called it Pizza Palace:
+		```
+		myFirstRestaurant = Restaurant(name = "Pizza Palace")
+		session.add(myFirstRestaurant)
+		sesssion.commit()
+		```
+		
+		We created a cheese pizza menu item and added it to the Pizza Palace Menu:
+		```
+		cheesepizza = menuItem(name="Cheese Pizza", description = "Made with all natural ingredients and fresh mozzarella", course="Entree", price="$8.99", restaurant=myFirstRestaurant)
+		session.add(cheesepizza)
+		session.commit()
+		```
+	
+	READ
+		We read out information in our database using the query method in SQLAlchemy:
+
+		```
+		firstResult = session.query(Restaurant).first()
+		firstResult.name
+
+		items = session.query(MenuItem).all()
+		for item in items:
+		    print item.name
+		```
+	
+	UPDATE
+		In order to update and existing entry in our database, we must execute the following commands:
+
+		1. Find Entry
+		2. Reset value(s)
+		3. Add to session
+		4. Execute session.commit()
+		We found the veggie burger that belonged to the Urban Burger restaurant by executing the following query:
+		```
+		veggieBurgers = session.query(MenuItem).filter_by(name= 'Veggie Burger')
+		for veggieBurger in veggieBurgers:
+		    print veggieBurger.id
+		    print veggieBurger.price
+		    print veggieBurger.restaurant.name
+		    print "\n"
+		```
+
+		Then we updated the price of the veggie burger to $2.99:
+		```
+		UrbanVeggieBurger = session.query(MenuItem).filter_by(id=8).one()
+		UrbanVeggieBurger.price = '$2.99'
+		session.add(UrbanVeggieBurger)
+		session.commit() 
+		```
+	
+	DELETE
+		To delete an item from our database we must follow the following steps:
+
+		1. Find the entry
+		2. Session.delete(Entry)
+		3. Session.commit()
+		We deleted spinach Ice Cream from our Menu Items database with the following operations:
+		```
+		spinach = session.query(MenuItem).filter_by(name = 'Spinach Ice Cream').one()
+		session.delete(spinach)
+		session.commit()
+		```
