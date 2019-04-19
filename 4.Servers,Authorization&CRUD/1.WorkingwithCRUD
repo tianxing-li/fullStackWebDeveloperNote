@@ -107,7 +107,7 @@ engine = create_engine('sqlite:///restaurantmenu.db')
 Base.metadata.bind = engine
 
 # create a sessionmaker object. this establishes a link of communication between code executions and the engine
-DBSession = sessionmaker(bind = engine)
+DBSession = sessionmaker(bind=engine)
 
 # In order to CRUD infos on database, SQLAlchemy executes database operations via an interface. (session)
 # A session allows us to write down all the commands execute, but not send them to the database until call a commit.

@@ -1,0 +1,114 @@
+C/S
+GET -> safe method, get data from db
+POST -> add, change, remove data from server
+status code:
+	200 success
+	301 redirect
+	404 not found
+	https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+```
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+# https://docs.python.org/2/library/basehttpserver.html
+import cgi
+# common gateway interface lib in py
+
+
+class webServerHandler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        try:
+            if self.path.endswith("/hello"):
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+
+                output = ""
+                output += "<html><body>"
+                output += "<h1>Hello!</h1>"
+
+                output += '''<form method='POST' enctype='multipart/form-data'\
+                    action='hello'><h2>What would you lik me to say?</h2>\
+                    <input name='message' type='text' ><input type='submit' \
+                    value='Submit'></form>'''
+                output += "</body></html>"
+
+                self.wfile.write(output)
+                print output
+                return
+
+        except IOError:
+            self.send_error(404, "File Not Found %s" % self.path)
+
+    def do_POST(self):
+        try:
+            self.send_response(301)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+
+            ctype, pdict = cgi.parse_header(
+                self.headers.getheader('content-type'))
+            # this cgi.parse_header function parse an HTML form header, \
+            # such as content type, \
+            # into a main value and dictionary of parameters.
+            if ctype == 'multipart/form-data':
+                fields = cgi.parse_multipart(self.rfile, pdict)
+                # collect all of the fields in a form
+                messagecontent = fields.get('message')
+                # get out the value of a specific field or set of fields and \
+                # store them in an array
+
+            output = ""
+            output += "<html><body>"
+            output += "<h2>Okay, how about this: </h2>"
+            output += "<h1> %s </h1>" % messagecontent[0]
+
+            output += "<form method='POST' enctype='multipart/form-data' \
+                action='hello'><h2>What would you lik me to say?</h2>\
+                    <input name='message' type='text' >\
+                        <input type='submit' value='Submit'></form>"
+            output += "</body></html>"
+
+            self.wfile.write(output)
+            print output
+
+        except:
+            pass
+
+
+def main():
+    # try to attempy the code inseide the try block.
+    # if a defined event occurs, we can exit out of the code with an exception.
+    try:
+        port = 8080
+        server = HTTPServer(('', port), webServerHandler)
+        print("Web server running on port %s" % port)
+        server.serve_forever()
+
+    except KeyboardInterrupt:
+        print("^C entered, stopping web server...")
+        server.socket.close()
+    # can be triggered when the user holds ctrl+c on the keyboard.
+
+
+if __name__ == '__main__':
+    main()
+
+
+```
+
+web server code
+	handler
+		indicates what code to execute based on the type of HTTP request that is sent to the server.
+	main()
+		instantiate server and specify what port it will listen on
+
+Port Forwarding
+	Your Vagrant File
+	https://github.com/udacity/fullstack-nanodegree-vm/blob/master/vagrant/Vagrantfile
+
+	Port forwarding allows us to open pages in our browser from the web server from our virtual machine as if they were being run locally. See which ports are being used for this class. If you want to use another port you can add another line to the vagrant file and run "vagrant reload" from a terminal in the directory of your vagrant file on your host machine. More information about port forwarding is available here .
+	https://www.vagrantup.com/docs/networking/forwarded_ports.html
+
+Chrome Developer Tools
+https://developers.google.com/web/tools/chrome-devtools/dom/
