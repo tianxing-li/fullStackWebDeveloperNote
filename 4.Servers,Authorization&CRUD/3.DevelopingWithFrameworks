@@ -1,0 +1,236 @@
+FRAMEWORKS
+
+1. Database
+2. Templates
+3. url_for
+4. forms
+5. message flashing
+6. JSON
+7. Styling
+
+flask app
+
+```
+from flask import Flask
+# create an instance of this class with the name of the running application
+app = Flask(__name__)
+# anytime we run an app in py, a special variable called "__name__" gets defined for the app and all of the imports it uses.
+
+
+@app.route('/')
+# decorator: essentially wraps our function inside the app.route function that flask has already created.
+@app.route('/hello')
+# so if either of these routes get sent from the browser, the function gets executed.
+# http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
+def HelloWorld():
+    return "Hello World"
+
+
+if __name__ == '__main__':
+# the app run by py interpreter gets a "__name__" variable set to "__main__" whereas all the other imported py files get a double underscore, name double underscore variable set to the actual name of the py file. 
+    app.debug = True
+    app.run(host='0.0.0.0', port=5000)
+
+```
+
+@paa.route('/index')
+route decorator is used to bind a function to a URL, there is more to it than just static paths.
+can make certaion paths of the URL dynamic and attach multiple rules to a function.
+add variables to a url, can specify a rule with type: variable_name,
+exp: "path/type:variable_name/path"
+	type: integer, string or another path
+http://flask.pocoo.org/docs/1.0/quickstart/#routing
+
+
+```
+@app.route('/restaurants/<int:restaurant_id>/')
+def restaurantMenu(restaurant_id):
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    items = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
+    output = ''
+    for i in items:
+        output += i.name
+        output += '</br>'
+        output += i.price
+        output += '</br>'
+        output += i.description
+        output += '</br>'
+        output += '</br>'
+    return output
+```
+
+
+render_template(templateName.html, valuable=keyword)
+// create a template dir on the same path, and create a menu.html
+// py code ===HTML Escaping===> menu.html
+// https://en.wikipedia.org/wiki/HTML#Character_and_entity_references
+
+menu.html
+```
+<html>
+
+<body>
+
+<h1>{{restaurant.name}}</h1>
+
+
+{% for i in items %}
+// {%,the single bracket and a percent sign on either side is the logical code, execute in html like a for loop
+
+<div>
+
+<p>{{i.name}}</p>
+// {{, the double brackets indicate the code that we want it's results printed into the html document itself.
+
+<p>{{i.description}}</p>
+
+<p> {{i.price}} </p>
+
+</div>
+
+
+{% endfor %}
+// since, from within html codes we can not use indentations to mark the beginning and ending of statements and loops
+// so we use keywords, like {%endfor%}, {%endif%}
+</body>
+
+</html>
+```
+
+
+py function
+```
+from flask import render_template
+
+@app.route('/restaurants/<int:restaurant_id>/')
+def restaurantMenu(restaurant_id):
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    items = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
+    return render_template('menu.html', restaurant=restaurant, items=items)
+```
+
+"URL Building" is a helpful feature in flask to create URL base the function they execute.
+	To build URL spcific functions, use the "url_for()" 
+	url_for accepts the name of the function as the first argument, and a number of keyword arguyments each corresponding to the variable part of the URL rule.
+
+	url_for(function, keyword1, kw2, ...)
+	exp:
+		url_for('editMenuItem', restaurant_id = restaurant.id, menu_id = i.id)
+		<a href='{{url_for('editMenuItem', restaurant_id = restaurant.id, menu_id = i.id) }}'>Edit</a>
+
+there are various types of requests that can send along with URl.
+	default a route in flask only answers to get requests.
+
+	providing the methods argument inside the route decorator
+	exp.: @app.route('/restaurant/<int:restaurant_id>/new/', methods=['GET', 'POST'])
+
+```
+<html>
+<body>
+<h1> New Menu Item </h1>
+
+<form action="{{url_for('newMenuItem', restaurant_id=restaurant_id )}}" method = 'POST'>
+
+<p>Name:</p>
+
+<input type='text' size='30' name='name'>
+
+<input type='submit' value='Create'>
+
+</form>
+
+</body>
+</html>
+```
+
+```
+from flask import request, redirect, url_for
+
+@app.route('/restaurant/<int:restaurant_id>/new/', methods=['GET', 'POST'])
+def newMenuItem(restaurant_id):
+    if request.method == 'POST':
+        newItem = MenuItem(
+            name=request.form['name'], restaurant_id=restaurant_id)
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+    else:
+        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
+
+```
+
+Message Flashing(from flask import flash)
+	add a feature expicifit notifice that system has responded to their input.
+	Msaage Flashing can prompt a message to user imediately after certain message take in place, and then disappeared next time page request
+
+	message flashing use a concept called session.
+		session are ways that a server can store information caused multiple webpage to create more personlized user experience.
+
+	flash("insert message here")
+		get_flashed_messages()
+
+```add a sk in main
+if __name__ == '__main__':
+    app.secret_key = 'a_secret_key'
+    # (from internet is better)
+    app.debug = True
+    app.run(...)
+```
+
+```py function
+session.add(newItem)
+session.commit()
+flash("new menu item created!")
+```
+
+
+
+```html
+<!--MESSAGE FLASHING EXAMPLE -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<ul>
+{% for message in messages %}
+  <li><strong>{{message}}</strong></li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+```
+
+
+Flask can find css, javascript automatically, if we put them into a directory named "static"
+
+```html
+<head>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
+```
+
+Responding with JSON
+	restfulAPI: when an API is communicated over the Internet, following the rules of HTTP.
+	one of the most popular ways of sending data with restful architecture is with a format called JSON, which stands for JavaScript object notation.
+
+```py
+from flask import jsonify
+
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+def restaurantMenuJSON(restaurant_id):
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    items = session.query(MenuItem).filter_by(
+        restaurant_id=restaurant_id).all()
+    return jsonify(MenuItems=[i.serialize for i in items])
+
+
+# ADD JSON API ENDPOINT HERE
+
+@app.route('/')
+@app.route('/restaurants/<int:restaurant_id>/menu')
+def restaurantMenu(restaurant_id):
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id)
+    return render_template(
+        'menu.html', restaurant=restaurant, items=items, restaurant_id=restaurant_id)
+```

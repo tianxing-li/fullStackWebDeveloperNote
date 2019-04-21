@@ -24,9 +24,8 @@ class MenuItem(Base):
     course = Column(String(250))
     description = Column(String(250))
     price = Column(String(8))
-    restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
+    restaurant_id = Column(Integer,ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
-
 #We added this serialize function to be able to send JSON objects in a serializable format
     @property
     def serialize(self):
@@ -44,3 +43,4 @@ class MenuItem(Base):
 engine = create_engine('sqlite:///restaurantmenu.db')
 
 Base.metadata.create_all(engine)
+
